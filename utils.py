@@ -2,7 +2,7 @@ from datetime import datetime
 from config import (
     REWARD_FAST, REWARD_MEDIUM, REWARD_SLOW,
     TIME_FAST, TIME_MEDIUM, TIME_SLOW,
-    NULL_PER_CHECK
+    NULL_PER_CHECK, SUPPORT_CONTACT
 )
 
 def calculate_reward(time_taken):
@@ -122,6 +122,22 @@ def format_check_message(code, null_amount):
 3. You'll receive {check_amount} check(s)
 
 ⚠️ Code valid for 24 hours
+"""
+    return text.strip()
+
+def format_support_text():
+    """Format support message"""
+    text = f"""
+💬 **Support & Feedback**
+
+Contact us for any issues, suggestions, or questions:
+
+📱 Telegram: {SUPPORT_CONTACT}
+
+We're here to help! 🙌
+
+⏱️ Response time: Usually within 24 hours
+📧 We read all messages and appreciate your feedback!
 """
     return text.strip()
 
