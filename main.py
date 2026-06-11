@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 
 from config import (
-    BOT_TOKEN, QUIZ_INTERVAL, NULL_PER_CHECK, UTXA_BOT_NAME,
+    BOT_TOKEN, QUIZ_INTERVAL, NULL_PER_CHECK, UTXA_BOT_NAME, SUPPORT_CONTACT,
     REWARD_FAST, REWARD_MEDIUM, REWARD_SLOW,
     TIME_FAST, TIME_MEDIUM, TIME_SLOW
 )
@@ -24,7 +24,7 @@ from questions import QuizGenerator
 from utils import (
     calculate_reward, get_reward_tier, format_profile_text, format_leaderboard_text,
     format_history_text, validate_null_amount, get_check_amount, format_check_message,
-    is_private_chat, is_group_chat, get_user_display_name
+    format_support_text, is_private_chat, is_group_chat, get_user_display_name
 )
 
 # Initialize bot and database
@@ -41,7 +41,7 @@ def get_start_markup():
     markup = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
     markup.add('📊 Profile', '💳 Buy Check')
     markup.add('📜 History', '🏆 Leaderboard')
-    markup.add('❓ Help')
+    markup.add('❓ Help', '💬 Support')
     return markup
 
 # ===================== GROUP COMMANDS =====================
@@ -117,6 +117,7 @@ Use this private chat for:
 - 💳 Buy & redeem checks
 - 📜 Game history
 - 🏆 Leaderboard
+- 💬 Support
 
 Join a group and use /quiz to start!
 """
@@ -173,6 +174,15 @@ Min amount: 2 NULL
 """
     bot.send_message(message.chat.id, text, parse_mode='Markdown')
 
+@bot.message_handler(commands=['support'], func=is_private_chat)
+def support_command(message):
+    """Show support information"""
+    text = format_support_text()
+    markup = telebot.types.InlineKeyboardMarkup()
+    markup.add(telebot.types.InlineKeyboardButton("📱 Contact Support", url=f"https://t.me/{SUPPORT_CONTACT.replace('@', '')}"))
+    
+    bot.send_message(message.chat.id, text, parse_mode='Markdown', reply_markup=markup)
+
 @bot.message_handler(commands=['help'], func=is_private_chat)
 def help_command(message):
     """Show help"""
@@ -195,6 +205,7 @@ def help_command(message):
 /history - See your recent games
 /leaderboard - Top 10 players
 /buy_check - Convert NULL to checks
+/support - Contact support
 
 💳 **Withdrawing NULL:**
 1. Use /buy_check to generate a code
@@ -206,7 +217,7 @@ def help_command(message):
 - Questions appear every 5 minutes
 - Accuracy matters for leaderboard!
 
-❓ Issues? Contact @support
+💬 Need help? Use /support command
 """
     bot.send_message(message.chat.id, text, parse_mode='Markdown')
 
@@ -231,6 +242,10 @@ def button_leaderboard(message):
 @bot.message_handler(func=lambda m: m.text == '❓ Help', content_types=['text'])
 def button_help(message):
     help_command(message)
+
+@bot.message_handler(func=lambda m: m.text == '💬 Support', content_types=['text'])
+def button_support(message):
+    support_command(message)
 
 # ===================== QUIZ ANSWER HANDLER =====================
 
@@ -397,6 +412,7 @@ if __name__ == '__main__':
     print(f"✅ Bot token loaded")
     print(f"✅ Database initialized")
     print(f"✅ Quiz interval: {QUIZ_INTERVAL} seconds")
+    print(f"✅ Support contact: {SUPPORT_CONTACT}")
     
     # Start quiz scheduler in background
     scheduler_thread = threading.Thread(target=quiz_scheduler, daemon=True)
