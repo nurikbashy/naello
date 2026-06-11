@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  naello-bot:
+    build: .
+    container_name: naello-bot
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - DATABASE_PATH=/data/game.db
+      - QUIZ_INTERVAL=300
+      - UTXA_BOT_NAME=@utxa_bot
+    volumes:
+      - ./data:/data
+    restart: always
+    networks:
+      - naello-network
+
+networks:
+  naello-network:
+    driver: bridge
