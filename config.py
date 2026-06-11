@@ -9,6 +9,9 @@ DATABASE_PATH = os.getenv('DATABASE_PATH', 'game.db')
 QUIZ_INTERVAL = int(os.getenv('QUIZ_INTERVAL', 300))  # 5 minutes in seconds
 UTXA_BOT_NAME = os.getenv('UTXA_BOT_NAME', '@utxa_bot')
 
+# Support Contact
+SUPPORT_CONTACT = os.getenv('SUPPORT_CONTACT', '@tonvio')
+
 # NULL Token Configuration
 NULL_PER_CHECK = 2  # 2 NULL = 1 check (1,000,000,000,000,000 coins in @utxa_bot)
 
