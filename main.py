@@ -122,7 +122,7 @@ Use this private chat for:
 Join a group and use /quiz to start!
 """
     bot.send_message(message.chat.id, text, parse_mode='Markdown', 
-                    reply_markup=get_start_markup())
+                     reply_markup=get_start_markup())
 
 @bot.message_handler(commands=['profile'], func=is_private_chat)
 def show_profile(message):
@@ -132,7 +132,7 @@ def show_profile(message):
     
     text = format_profile_text(stats)
     bot.send_message(message.chat.id, text, parse_mode='Markdown',
-                    reply_markup=get_start_markup())
+                     reply_markup=get_start_markup())
 
 @bot.message_handler(commands=['history'], func=is_private_chat)
 def show_history(message):
@@ -142,7 +142,7 @@ def show_history(message):
     
     text = format_history_text(history)
     bot.send_message(message.chat.id, text, parse_mode='Markdown',
-                    reply_markup=get_start_markup())
+                     reply_markup=get_start_markup())
 
 @bot.message_handler(commands=['leaderboard'], func=is_private_chat)
 def show_leaderboard(message):
@@ -151,7 +151,7 @@ def show_leaderboard(message):
     text = format_leaderboard_text(leaderboard)
     
     bot.send_message(message.chat.id, text, parse_mode='Markdown',
-                    reply_markup=get_start_markup())
+                     reply_markup=get_start_markup())
 
 @bot.message_handler(commands=['buy_check'], func=is_private_chat)
 def buy_check_command(message):
@@ -265,7 +265,15 @@ def handle_answer(message):
     
     # Validate answer
     user_input = message.text.strip()
-    is_correct, user_answer = QuizGenerator.validate_answer(user_input, active_q['correct_answer'])
+    
+    try:
+        # Принудительно конвертируем ввод пользователя в INT, чтобы типы данных совпадали
+        user_answer_int = int(user_input)
+    except ValueError:
+        return
+        
+    # Передаем уже числовое значение в валидатор вопросов
+    is_correct, user_answer = QuizGenerator.validate_answer(user_answer_int, active_q['correct_answer'])
     
     # Add user to database
     add_or_update_user(user_id, message.from_user.username, 
@@ -355,7 +363,7 @@ def process_buy_check(message):
         
     except IndexError:
         bot.send_message(message.chat.id, "Usage: `/buy_check <amount>`\nExample: `/buy_check 2`",
-                        parse_mode='Markdown')
+                         parse_mode='Markdown')
 
 # ===================== QUIZ SENDER =====================
 
