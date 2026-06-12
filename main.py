@@ -261,12 +261,15 @@ def handle_answer(message):
     if not active_q:
         return
     
-    # Ищем первое число в тексте сообщения с помощью регулярного выражения
-    match = re.search(r'\b\d+\b', message.text)
+    # Очищаем строку от пробелов по краям
+    text_cleaned = message.text.strip()
+    
+    # Ищем вообще любые цифры в тексте, игнорируя пробелы и спецсимволы вокруг
+    match = re.search(r'\d+', text_cleaned)
     if not match:
-        return  # Если чисел в сообщении нет, просто игнорируем
+        return  # Если цифр вообще нет, игнорируем
         
-    # Извлекаем найденную строку и переводим в int
+    # Переводим в int
     user_answer_int = int(match.group())
     
     # Get time taken
