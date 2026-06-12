@@ -7,6 +7,7 @@ Earn NULL tokens by answering math questions correctly!
 import telebot
 import threading
 import time
+import re
 from datetime import datetime, timedelta
 from collections import defaultdict
 
@@ -249,7 +250,7 @@ def button_support(message):
 
 # ===================== QUIZ ANSWER HANDLER =====================
 
-@bot.message_handler(func=lambda m: is_group_chat(m) and m.text.isdigit(), content_types=['text'])
+@bot.message_handler(func=lambda m: is_group_chat(m), content_types=['text'])
 def handle_answer(message):
     """Handle quiz answer in group"""
     chat_id = message.chat.id
@@ -260,19 +261,18 @@ def handle_answer(message):
     if not active_q:
         return
     
+    # Ищем первое число в тексте сообщения с помощью регулярного выражения
+    match = re.search(r'\b\d+\b', message.text)
+    if not match:
+        return  # Если чисел в сообщении нет, просто игнорируем
+        
+    # Извлекаем найденную строку и переводим в int
+    user_answer_int = int(match.group())
+    
     # Get time taken
     time_taken = (datetime.now() - active_q['created_at']).total_seconds()
     
-    # Validate answer
-    user_input = message.text.strip()
-    
-    try:
-        # Принудительно конвертируем ввод пользователя в INT, чтобы типы данных совпадали
-        user_answer_int = int(user_input)
-    except ValueError:
-        return
-        
-    # Передаем уже числовое значение в валидатор вопросов
+    # Передаем числовое значение в валидатор вопросов
     is_correct, user_answer = QuizGenerator.validate_answer(user_answer_int, active_q['correct_answer'])
     
     # Add user to database
