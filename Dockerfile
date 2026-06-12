@@ -19,7 +19,6 @@ COPY config.py .
 COPY database.py .
 COPY questions.py .
 COPY utils.py .
-COPY .env .
 
 # Create data directory
 RUN mkdir -p /data
